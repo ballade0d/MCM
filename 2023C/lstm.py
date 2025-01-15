@@ -19,7 +19,7 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_values = scaler.fit_transform(values)
 
 
-# 创建滞后序列（例如，使用过去 10 天的数据预测下一天）
+# 创建滞后序列（例如，使用过去 30 天的数据预测下一天）
 def create_lagged_data(data, lag):
     X, y = [], []
     for i in range(lag, len(data)):
@@ -50,7 +50,7 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 history = model.fit(X_train, y_train, epochs=50, batch_size=32, verbose=1, shuffle=False,
                     validation_data=(X_test, y_test), callbacks=[
         EarlyStopping(patience=10, restore_best_weights=True),  # 防止过拟合
-        ReduceLROnPlateau(factor=0.5, patience=5, verbose=1)  # 动态调整学习率
+        ReduceLROnPlateau(factor=0.8, patience=5)  # 动态调整学习率
     ])
 
 # 使用测试集进行预测
