@@ -51,6 +51,7 @@ my_word = 'eerie'
 my_frequency = 0.0002396
 my_try = [0.61, 5.69, 24.75, 34.88, 23.11, 8.92, 1.38]
 my_score = (0.5 * (1 * my_try[0] + 2 * my_try[1] + 3 * my_try[2] + 4 * my_try[3] + 5 * my_try[4] + 6 * my_try[5]) + 0.5 * my_try[6]) / 100
+print(my_score)
 
 # 预测
 pred = kmeans.predict(scaler.transform([[np.mean(my_try), my_frequency, 1]]))

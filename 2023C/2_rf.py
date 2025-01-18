@@ -47,6 +47,7 @@ plt.plot(range(1, 8), y_test_sample, 'r-', label='True')
 plt.plot(range(1, 8), y_pred_sample, 'b-', label='Predict')
 plt.title('True and Predict of one sample')
 plt.legend()
+plt.savefig('plot/sample.pdf')
 plt.show()
 
 # 预测新的单词
@@ -59,6 +60,7 @@ print(pred)
 plt.plot(range(1, 8), pred[0], 'b-', label='Predict')
 plt.title('Predict of word EERIE')
 plt.legend()
+plt.savefig('plot/eerie.pdf')
 plt.show()
 
 print(pred)
