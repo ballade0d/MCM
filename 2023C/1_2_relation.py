@@ -21,12 +21,17 @@ data['frequency'] = data['frequency'].apply(lambda x: np.log10(x))
 plt.scatter(data['frequency'], data['score'], s=5)
 plt.xlabel('Frequency')
 plt.ylabel('score')
+plt.title('Frequency vs Score')
+plt.savefig('plot/frequency_score.pdf')
 plt.show()
 
 # 画pearson correlation热力图
 t = data[['score', '1 try', '2 tries', '3 tries', '4 tries', '5 tries', '6 tries', '7 or more tries (X)', 'frequency']]
 
 corr = t.corr()
+# 画热力图，修改宽度
+plt.figure(figsize=(9, 7))
 sns.heatmap(corr, annot=True, cmap='coolwarm')
 plt.title('Pearson Correlation')
+plt.savefig('plot/pearson_correlation.pdf')
 plt.show()

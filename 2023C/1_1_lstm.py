@@ -64,6 +64,7 @@ plt.title('Model Loss During Training')
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend()
+plt.savefig('plot/lstm_loss.pdf')
 plt.show()
 
 # 反归一化
@@ -78,6 +79,7 @@ plt.title('Actual vs Predicted Values')
 plt.xlabel('Time')
 plt.ylabel('Number of Reported Results')
 plt.legend()
+plt.savefig('plot/lstm_part.pdf')
 plt.show()
 
 # 绘制实际值和预测值对比（全局）
@@ -88,6 +90,7 @@ plt.title('Actual vs Predicted Values')
 plt.xlabel('Time')
 plt.ylabel('Number of Reported Results')
 plt.legend()
+plt.savefig('plot/lstm_all.pdf')
 plt.show()
 
 # 使用最后的滞后窗口预测未来 90 天
@@ -117,6 +120,7 @@ plt.xlabel('Date')
 plt.ylabel('Number of Reported Results')
 plt.legend()
 plt.grid()
+plt.savefig('plot/lstm_future.pdf')
 plt.show()
 
 # 可视化（局部）
@@ -128,4 +132,5 @@ plt.xlabel('Date')
 plt.ylabel('Number of Reported Results')
 plt.legend()
 plt.grid()
+plt.savefig('plot/lstm_future_part.pdf')
 plt.show()

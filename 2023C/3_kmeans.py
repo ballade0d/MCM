@@ -40,16 +40,29 @@ plt.scatter(centers[:, 0], centers[:, 1], c='red', s=200, alpha=0.75)
 plt.title('KMeans Clustering')
 plt.xlabel('PCA 1')
 plt.ylabel('PCA 2')
+plt.savefig('plot/kmeans.pdf')
 plt.show()
 
 # 计算轮廓系数（评估聚类效果）
 score = silhouette_score(features, data['difficulty'])
 print("Silhouette Coefficient: %0.3f" % score)
 
+my_word = 'eerie'
+my_frequency = 0.0002396
+my_try = [0.61, 5.69, 24.75, 34.88, 23.11, 8.92, 1.38]
+my_score = (0.5 * (1 * my_try[0] + 2 * my_try[1] + 3 * my_try[2] + 4 * my_try[3] + 5 * my_try[4] + 6 * my_try[5]) + 0.5 * my_try[6]) / 100
+
+# 预测
+pred = kmeans.predict(scaler.transform([[np.mean(my_try), my_frequency, 1]]))
+
 # 画所有单词按照score排列的图
 data = data.sort_values(by='score', ascending=True)
-plt.scatter(data['Word'], data['score'])
+plt.scatter(data['Word'], data['score'], s=5)
+# 找到最近的score的位置
+index = np.abs(data['score'] - my_score).idxmin()
+plt.scatter(data['Word'][index], data['score'][index], c='red', s=50)
 plt.title('Score')
+# x轴不显示数值
+plt.xticks([])
+plt.savefig('plot/score.pdf')
 plt.show()
-
-# TODO: 预测新的单词的难度
