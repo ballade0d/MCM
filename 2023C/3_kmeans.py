@@ -19,28 +19,22 @@ data['score'] = (0.5 * (1 * data['1 try'] + 2 * data['2 tries'] + 3 * data['3 tr
 data['percentage'] = data['Number of  reported results'] / data['Number in hard mode']
 
 # 选择需要聚类的特征
-features = data[['score', 'frequency', 'percentage']]
+features = data[['score', 'frequency']]
 
 # 标准化
 scaler = StandardScaler()
 features = scaler.fit_transform(features)
 
 # KMeans聚类
-kmeans = KMeans(n_clusters=3, init='k-means++')
+kmeans = KMeans(n_clusters=5, init='k-means++')
 data['difficulty'] = kmeans.fit_predict(features)
 
-# PCA降维
-pca = PCA(n_components=2)
-X_pca = pca.fit_transform(features)
-
-plt.scatter(X_pca[:, 0], X_pca[:, 1], c=data['difficulty'])
-
-centers = pca.transform(kmeans.cluster_centers_)
-plt.scatter(centers[:, 0], centers[:, 1], c='red', s=200, alpha=0.75)
-plt.title('KMeans Clustering')
-plt.xlabel('PCA 1')
-plt.ylabel('PCA 2')
-plt.savefig('plot/kmeans.pdf')
+# 不需要降维，直接画图
+plt.scatter(data['score'], data['frequency'], c=data['difficulty'], s=5)
+plt.title('Difficulty')
+plt.xlabel('Score')
+plt.ylabel('Frequency')
+plt.savefig('plot/difficulty.pdf')
 plt.show()
 
 # 计算轮廓系数（评估聚类效果）
@@ -54,7 +48,7 @@ my_score = (0.5 * (1 * my_try[0] + 2 * my_try[1] + 3 * my_try[2] + 4 * my_try[3]
 print(my_score)
 
 # 预测
-pred = kmeans.predict(scaler.transform([[np.mean(my_try), my_frequency, 1]]))
+pred = kmeans.predict(scaler.transform([[my_score, my_frequency]]))[0]
 
 # 画所有单词按照score排列的图
 data = data.sort_values(by='score', ascending=True)
@@ -62,8 +56,17 @@ plt.scatter(data['Word'], data['score'], s=5)
 # 找到最近的score的位置
 index = np.abs(data['score'] - my_score).idxmin()
 plt.scatter(data['Word'][index], data['score'][index], c='red', s=50)
+# 画出每个difficulty的最小值
+for i in range(5):
+    index = data[data['difficulty'] == i]['score'].idxmin()
+    plt.scatter(data['Word'][index], data['score'][index], c='green', s=50)
 plt.title('Score')
 # x轴不显示数值
 plt.xticks([])
 plt.savefig('plot/score.pdf')
 plt.show()
+
+# 列出每个difficulty的单词
+for i in range(5):
+    print('Difficulty:', i)
+    print(data[data['difficulty'] == i]['Word'].values)
