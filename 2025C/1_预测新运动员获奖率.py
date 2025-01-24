@@ -32,6 +32,8 @@ future_prediction = model.predict([[2028]])
 print("2028预测：", future_prediction)
 # visualize
 plt.plot(X, y, label='Historical')
+# plot test set
+plt.scatter(X_test, y_pred, color='black')
 plt.plot([2028], future_prediction, 'ro', label='Prediction')
 plt.title('New Athlete Winning Rate Prediction')
 plt.legend()
