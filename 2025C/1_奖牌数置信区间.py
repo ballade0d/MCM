@@ -55,7 +55,7 @@ host_test = X_test[:, -1, 1]  # 测试集的主场变量
 host_test = host_test.reshape(-1, 1)  # (样本数, 1)
 
 # 定义bootstrap的次数
-n_iterations = 50
+n_iterations = 100
 bootstrap_predictions = []
 
 # 设置未来预测的参数

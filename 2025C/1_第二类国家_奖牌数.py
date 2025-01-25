@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from keras import Input, Model
 from keras.src.callbacks import EarlyStopping, ReduceLROnPlateau
-from keras.src.layers import Bidirectional, LSTM, Dense, Multiply
+from keras.src.layers import Bidirectional, LSTM, Dense, Multiply, Concatenate
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
@@ -43,7 +43,7 @@ def create_lagged_data(data, lag):
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_values = scaler.fit_transform(X)
 
-lag = 6
+lag = 8
 X, y = create_lagged_data(scaled_values, lag)
 
 # 数据划分
@@ -53,10 +53,9 @@ y_train, y_test = y[:train_size], y[train_size:]
 
 input_layer = Input(shape=(X_train.shape[1], X_train.shape[2]))
 host_input = Input(shape=(1, 1))
-attention = Dense(1, activation='sigmoid')(host_input)
-weighted_input = Multiply()([input_layer, attention])
-lstm = Bidirectional(LSTM(64, return_sequences=False))(weighted_input)
-lstm = Dense(32)(lstm)
+interaction_term = Multiply()([input_layer, host_input])
+merged_input = Concatenate(axis=2)([input_layer, interaction_term])
+lstm = Bidirectional(LSTM(32, return_sequences=False))(merged_input)
 output_layer = Dense(1)(lstm)
 
 model = Model(inputs=[input_layer, host_input], outputs=[output_layer])
@@ -136,8 +135,9 @@ print(f"Predicted medal count for the US in {future_year} (as host): {future_pre
 
 plt.figure(figsize=(10, 6))
 plt.plot(medal_counts['Year'], medal_counts['Total'], label='Historical')
-plt.plot(medal_counts['Year'][-len(predicted):], predicted, label='Predicted', linestyle='--')
-plt.scatter(future_year, future_prediction_actual, color='red', label='2028 Prediction')
+# 加上2028
+plt.plot(np.append(medal_counts['Year'][-len(predicted):], 2028), np.append(predicted, future_prediction_actual[0]),
+         label='Predicted', linestyle='--')
 plt.title('Predicted Values')
 plt.xlabel('Time')
 plt.ylabel('Number of Medals')

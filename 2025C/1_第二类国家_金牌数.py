@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from keras import Input, Model
 from keras.src.callbacks import EarlyStopping, ReduceLROnPlateau
-from keras.src.layers import Bidirectional, LSTM, Dense, Multiply
+from keras.src.layers import Bidirectional, LSTM, Dense, Multiply, Concatenate
 
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
@@ -44,7 +44,7 @@ def create_lagged_data(data, lag):
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_values = scaler.fit_transform(X)
 
-lag = 6
+lag = 8
 X, y = create_lagged_data(scaled_values, lag)
 
 # 数据划分
@@ -54,10 +54,9 @@ y_train, y_test = y[:train_size], y[train_size:]
 
 input_layer = Input(shape=(X_train.shape[1], X_train.shape[2]))
 host_input = Input(shape=(1, 1))
-attention = Dense(1, activation='sigmoid')(host_input)
-weighted_input = Multiply()([input_layer, attention])
-lstm = Bidirectional(LSTM(64, return_sequences=False))(weighted_input)
-lstm = Dense(32)(lstm)
+interaction_term = Multiply()([input_layer, host_input])
+merged_input = Concatenate(axis=2)([input_layer, interaction_term])
+lstm = Bidirectional(LSTM(32, return_sequences=False))(merged_input)
 output_layer = Dense(1)(lstm)
 
 model = Model(inputs=[input_layer, host_input], outputs=[output_layer])
