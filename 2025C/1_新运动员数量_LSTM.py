@@ -37,7 +37,7 @@ lag = 3
 X, y = create_lagged_data(scaled_values, lag)
 
 # 将数据划分为训练集和测试集（80% 训练，20% 测试）
-train_size = int(len(X) * 0.9)
+train_size = int(len(X) * 0.8)
 X_train, X_test = X[:train_size], X[train_size:]
 y_train, y_test = y[:train_size], y[train_size:]
 
