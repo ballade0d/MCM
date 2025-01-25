@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 from keras import Input, Model
 from keras.src.callbacks import EarlyStopping, ReduceLROnPlateau
-from keras.src.layers import Bidirectional, LSTM, Dense, Dropout, Concatenate, Activation
-
+from keras.src.layers import Bidirectional, LSTM, Dense, Multiply
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
@@ -53,24 +52,15 @@ X_train, X_test = X[:train_size], X[train_size:]
 y_train, y_test = y[:train_size], y[train_size:]
 
 input_layer = Input(shape=(X_train.shape[1], X_train.shape[2]))
-lstm_out = Bidirectional(LSTM(8, return_sequences=True))(input_layer)
-lstm_out = Dropout(0.1)(lstm_out)
-lstm_out = Bidirectional(LSTM(4, return_sequences=False))(lstm_out)
-
-# Host team input
-host_input = Input(shape=(1,))
-
-# 扩展 host_attention 的维度以匹配 LSTM 输出
-host_attention = Dense(8)(host_input)  # 8 是 LSTM 输出的特征维度
-host_attention = Activation('sigmoid')(host_attention)
-
-# 连接 LSTM 输出和 host attention
-merged = Concatenate()([lstm_out, host_attention])
-
-output_layer = Dense(1)(merged)
+host_input = Input(shape=(1, 1))
+attention = Dense(1, activation='sigmoid')(host_input)
+weighted_input = Multiply()([input_layer, attention])
+lstm = Bidirectional(LSTM(64, return_sequences=False))(weighted_input)
+lstm = Dense(32)(lstm)
+output_layer = Dense(1)(lstm)
 
 model = Model(inputs=[input_layer, host_input], outputs=[output_layer])
-model.compile(optimizer='adam', loss='mean_squared_error')
+model.compile(optimizer='adam', loss='mae')
 
 # 提取主场变量
 host_train = X_train[:, -1, 1]  # 提取每个序列最后一个时间步的主场变量

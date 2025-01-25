@@ -276,3 +276,97 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 print(accuracy_score(y_test, y_pred))
 print(classification_report(y_test, y_pred))
+
+countries = [
+  "LES",
+  "SSD",
+  "TUV",
+  "BIZ",
+  "YMD",
+  "ARU",
+  "TLS",
+  "ESA",
+  "CAY",
+  "STP",
+  "TAN",
+  "IVB",
+  "MTN",
+  "ANT",
+  "GUM",
+  "CGO",
+  "ROT",
+  "CHA",
+  "MLI",
+  "SKN",
+  "GUY",
+  "RWA",
+  "NCA",
+  "CAM",
+  "AND",
+  "VIN",
+  "NRU",
+  "GAM",
+  "LBA",
+  "HON",
+  "BAN",
+  "SWZ",
+  "BRU",
+  "GUI",
+  "MYA",
+  "VAN",
+  "BIH",
+  "LBR",
+  "IRQ",
+  "PNG",
+  "SEY",
+  "GEQ",
+  "COD",
+  "COK",
+  "BHU",
+  "MON",
+  "MHL",
+  "MDV",
+  "KIR",
+  "FSM",
+  "GBS",
+  "SAM",
+  "SLE",
+  "SOL",
+  "PLW",
+  "YEM",
+  "MAD",
+  "PLE",
+  "CAF",
+  "OMA",
+  "COM",
+  "SOM",
+  "ASA",
+  "ANG",
+  "BEN",
+  "HAI",
+  "LAO",
+  "LBN",
+  "MAW",
+  "YAR",
+  "NEP",
+  "LIB",
+  "LIE",
+  "LUX",
+  "MLT",
+  "BOL"
+]
+
+for country in countries:
+    name = country_translation[country]
+    if name not in athletes_count_by_country.columns:
+        print(f'{country} is not in the dataset')
+        continue
+    X = athletes_count_by_country[name]
+    X = X.drop(1896)
+    # check if X is dataframe
+    if isinstance(X, pd.DataFrame):
+        print(X)
+    X = X.to_frame().T
+    result = model.predict(X)
+    proba = model.predict_proba(X)
+    print(f'{name}: {result[0]} ({proba[0][1]:.2f})')
