@@ -7,11 +7,13 @@ from keras.src.layers import Bidirectional, LSTM, Dense, Dropout, Concatenate, A
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
+country = 'United States'
+
 # 数据读取和处理
 medal_counts = pd.read_csv('data/summerOly_medal_counts.csv')
 hosts = pd.read_csv('data/summerOly_hosts.csv')
 
-medal_counts = medal_counts[medal_counts['NOC'] == 'United States']
+medal_counts = medal_counts[medal_counts['NOC'] == country]
 years = medal_counts['Year'].values
 
 X_extra = np.array([])
@@ -20,7 +22,7 @@ for row in hosts.iterrows():
     if year not in years:
         continue
     host = row[1]['Host']
-    if host == 'United States':
+    if host == country:
         X_extra = np.append(X_extra, 1)
     else:
         X_extra = np.append(X_extra, 0)
@@ -102,13 +104,13 @@ plt.title('Actual vs Predicted Values')
 plt.xlabel('Time')
 plt.ylabel('Number of Medals')
 plt.legend()
-plt.savefig('plot/预测奖牌数_局部.pdf')
+plt.savefig('plot/预测奖牌数_局部_' + country + '.pdf')
 plt.show()
 
 plt.figure(figsize=(10, 6))
 plt.plot(medal_counts['Year'], medal_counts['Total'], label='Historical')
 plt.plot(medal_counts['Year'][-len(predicted):], predicted, label='Predicted', linestyle='--')
-plt.title('Actual vs Predicted Values)')
+plt.title('Actual vs Predicted Values')
 plt.xlabel('Time')
 plt.ylabel('Number of Medals')
 for i in range(len(years)):
@@ -116,7 +118,7 @@ for i in range(len(years)):
     if host == 1:
         plt.axvline(x=years[i], color='red', linestyle='--', alpha=0.5)
 plt.legend()
-plt.savefig('plot/预测奖牌数_全局.pdf')
+plt.savefig('plot/预测奖牌数_全局_' + country + '.pdf')
 plt.show()
 
 # 预测2028，host=True
@@ -146,9 +148,9 @@ plt.figure(figsize=(10, 6))
 plt.plot(medal_counts['Year'], medal_counts['Total'], label='Historical')
 plt.plot(medal_counts['Year'][-len(predicted):], predicted, label='Predicted', linestyle='--')
 plt.scatter(future_year, future_prediction_actual, color='red', label='2028 Prediction')
-plt.title('Predicted Values)')
+plt.title('Predicted Values')
 plt.xlabel('Time')
 plt.ylabel('Number of Medals')
 plt.legend()
-plt.savefig('plot/预测2028奖牌数.pdf')
+plt.savefig('plot/预测2028奖牌数_' + country + '.pdf')
 plt.show()

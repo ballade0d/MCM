@@ -246,6 +246,8 @@ year_index = athletes_count_by_country['Year']
 
 country_record = {}
 
+correlation = {}
+
 for col in athletes_count_by_country.columns:
     if col == 'Year':
         continue
@@ -257,7 +259,14 @@ for col in athletes_count_by_country.columns:
         year_record[year] = count
     country_record[col] = year_record
     # plot the trend
-    plt.plot(year_record.keys(), year_record.values(), label=col)
-    plt.plot(year_index, athletes_count_by_country[col], label=col + ' Athletes')
-    plt.legend()
-    plt.show()
+    # plt.plot(year_record.keys(), year_record.values(), label=col)
+    # plt.plot(year_index, athletes_count_by_country[col], label=col + ' Athletes')
+    # plt.legend()
+    # plt.show()
+    correlation[col] = athletes_count_by_country[col].corr(pd.Series(year_record.values()))
+
+# bar plot
+plt.bar(correlation.keys(), correlation.values())
+plt.xticks([])
+
+plt.show()
