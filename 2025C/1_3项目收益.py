@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 athletes = pd.read_csv('data/summerOly_athletes.csv')
 
 # 选择一个国家
-country = 'USA'
+country = 'FRA'
 
 # 提取该国家的运动员数据
 athletes_country = athletes[athletes['NOC'] == country]
@@ -15,7 +15,7 @@ athletes_country = athletes[athletes['NOC'] == country]
 medalists_country = athletes_country[athletes_country['Medal'] != 'No medal']
 
 # 去除团队项目的重复计数
-medal_events_country = medalists_country.drop_duplicates(subset=['Year', 'Sport', 'Event', 'Medal'])
+medal_events_country = medalists_country.drop_duplicates(subset=['Year', 'Sport', 'Event', 'Medal', 'Sex'])
 
 # 计算每个项目每年的奖牌数
 medal_counts_country = medal_events_country.groupby(['Sport', 'Year']).size().reset_index(name='Medal_Count')
@@ -35,16 +35,26 @@ portfolio_data['Sharpe_Ratio'] = portfolio_data['Return'] / portfolio_data['Risk
 portfolio_data.replace([np.inf, -np.inf], np.nan, inplace=True)
 portfolio_data.dropna(subset=['Sharpe_Ratio'], inplace=True)
 
+# 选择夏普比率最高的前几个项目
+top_n = 10
+top_projects = portfolio_data.nlargest(top_n, 'Sharpe_Ratio')
+
 # 绘制风险-收益散点图
 plt.figure(figsize=(12, 8))
-plt.scatter(portfolio_data['Risk'], portfolio_data['Return'], s=50, c=portfolio_data['Sharpe_Ratio'], cmap='viridis')
-for i in range(len(portfolio_data)):
-    plt.text(portfolio_data['Risk'].iloc[i], portfolio_data['Return'].iloc[i], portfolio_data['Sport'].iloc[i])
+scatter = plt.scatter(portfolio_data['Risk'], portfolio_data['Return'], s=50,
+                      c=portfolio_data['Sharpe_Ratio'], cmap='viridis')
+
+# 只标注夏普比率最高的项目
+for i in top_projects.index:
+    plt.text(portfolio_data['Risk'][i], portfolio_data['Return'][i],
+             portfolio_data['Sport'][i], fontsize=12)
+
 plt.xlabel('Risk (Standard Deviation)')
 plt.ylabel('Return (Average Medal Count)')
 plt.title(f'{country} Risk-Return Scatter Plot of Sports')
 plt.colorbar(label='Sharpe Ratio')
 plt.grid(True)
+plt.savefig('plot/risk_return_scatter.pdf')
 plt.show()
 
 # 准备投资组合数据
@@ -94,6 +104,7 @@ plt.ylabel('Expected Return (Average Medal Count)')
 plt.title(f'{country} Efficient Frontier of Portfolios (Random Simulation)')
 plt.legend()
 plt.grid(True)
+plt.savefig('plot/efficient_frontier.pdf')
 plt.show()
 
 # 显示最优组合的项目权重

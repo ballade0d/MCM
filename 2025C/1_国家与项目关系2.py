@@ -1,23 +1,74 @@
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-t = pd.read_csv("data/占50%以上的项目.csv", index_col='NOC')
-# 读取数据
-medals = pd.read_csv("data/medals_per_sport.csv", index_col='NOC')
-# medals仅保留t中index包含的国家
-medals = medals[medals.index.isin(t.index)]
-print(medals)
+# 假设您的数据文件位于 'data/summerOly_athletes.csv'
+athletes = pd.read_csv('data/summerOly_athletes.csv')
+
+# 只保留获得奖牌的运动员
+medalists = athletes[athletes['Medal'] != 'No medal']
+# 查看国家代码（NOC）的列表
+countries = medalists['NOC'].unique()
+
+# 选择几个主要国家（您可以根据需要修改）
+selected_countries = ['USA', 'CHN', 'RUS', 'GBR', 'GER', 'FRA']
+
+# 过滤出选定国家的数据
+country_medals = medalists[medalists['NOC'].isin(selected_countries)]
+
+# 按国家和体育项目统计奖牌数量
+medal_counts = country_medals.groupby(['NOC', 'Sport']).size().reset_index(name='Medal_Count')
+
+# 创建透视表，以 'Sport' 为索引，以 'NOC' 为列，值为 'Medal_Count'
+pivot_table = medal_counts.pivot(index='Sport', columns='NOC', values='Medal_Count')
+
+# 将缺失值填充为 0
+pivot_table = pivot_table.fillna(0)
+
+# 按总奖牌数对体育项目排序
+pivot_table['Total'] = pivot_table.sum(axis=1)
+pivot_table = pivot_table.sort_values(by='Total', ascending=False)
+pivot_table = pivot_table.drop(columns='Total')
+
+# 选择前10个体育项目
+top_sports = pivot_table.head(10)
+
+# 设置图形大小
+plt.figure(figsize=(12, 8))
 
 # 绘制堆叠柱状图
-medals.plot(kind="bar", stacked=True, figsize=(12, 8), colormap="tab20")
+top_sports.plot(kind='bar', stacked=True)
 
-# 添加标题和轴标签
-plt.title("Stacked Bar Chart of Medals by Sport and Country (NOC)", fontsize=16)
-plt.xlabel("Sport", fontsize=12)
-plt.ylabel("Number of Medals", fontsize=12)
+# 添加标题和标签
+plt.title('Top 10 Sports by Medal Distribution')
+plt.xlabel('Sport')
+plt.ylabel('Medal Count')
 
-# 添加图例
-plt.legend(title="Country (NOC)", bbox_to_anchor=(1.05, 1), loc='upper left')
+# 设置图例位置
+plt.legend(title='Country', bbox_to_anchor=(1.05, 1), loc='upper left')
 
 # 显示图表
+plt.tight_layout()
+plt.show()
+
+# 重置索引，准备用于 Seaborn
+data_for_sns = top_sports.reset_index().melt(id_vars='Sport', var_name='NOC', value_name='Medal_Count')
+
+# 绘图
+plt.figure(figsize=(12, 8))
+sns.barplot(data=data_for_sns, x='Sport', y='Medal_Count', hue='NOC')
+
+# 添加标题和标签
+plt.title('Country-wise Medal Distribution for Top 10 Sports')
+plt.xlabel('Sport')
+plt.ylabel('Medal Count')
+
+# 设置 x 轴标签旋转
+plt.xticks(rotation=45)
+
+# 设置图例位置
+plt.legend(title='Country', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# 显示图表
+plt.tight_layout()
 plt.show()

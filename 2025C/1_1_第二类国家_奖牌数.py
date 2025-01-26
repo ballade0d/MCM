@@ -6,7 +6,7 @@ from keras.src.layers import Bidirectional, LSTM, Dense, Multiply, Concatenate
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
-country = 'United States'
+country = 'Jamaica'
 
 # 数据读取和处理
 medal_counts = pd.read_csv('data/summerOly_medal_counts.csv')
